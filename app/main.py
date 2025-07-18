@@ -1,14 +1,21 @@
 from flask import Flask, jsonify
-import requests
+import subprocess
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route("/")
 def home():
-    response = requests.get("https://api.github.com")
+    # run the C++ binary
+    result = subprocess.run(["./my_cpp_app"], capture_output=True, text=True)
+    print(result.stdout)
+
+    # read output written by C++
+    with open("cpp_module_output.txt") as f:
+        cpp_output = f.read().strip()
+
     return jsonify({
-        "message": "Hello from Flask!",
-        "github_status": response.status_code
+        "message": "Hello from Python Flask!",
+        "cpp_output": cpp_output
     })
 
 if __name__ == "__main__":
